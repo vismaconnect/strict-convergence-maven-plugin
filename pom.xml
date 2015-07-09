@@ -1,0 +1,817 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>nl.ebpi.maven.plugins</groupId>
+	<artifactId>strict-convergence-maven-plugin</artifactId>
+  <version>1.0-SNAPSHOT</version>
+	<name>EBPI Strict Convergence Plugin</name>
+	<packaging>maven-plugin</packaging>
+	<description>Checks dependency convergence without being affected by dependencyManagement sections.</description>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Robert Hensing</name>
+      <email>robert.hensing@inology.nl</email>
+      <organization>EBPI BV</organization>
+      <organizationUrl>http</organizationUrl>
+    </developer>
+  </developers>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-api</artifactId>
+        <version>1.13.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-spi</artifactId>
+        <version>1.13.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-util</artifactId>
+        <version>1.13.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-impl</artifactId>
+        <version>1.13.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-plexus-metadata</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu</groupId>
+        <artifactId>sisu-inject-plexus</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu</groupId>
+        <artifactId>sisu-inject-bean</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-bean-reflect</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-bean-scanners</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+        <version>2.11.6</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>3.0.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>3.0.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-repository-metadata</artifactId>
+        <version>3.0.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact</artifactId>
+        <version>3.0.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model-builder</artifactId>
+        <version>3.0.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-aether-provider</artifactId>
+        <version>3.0.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-settings</artifactId>
+        <version>3.0.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-settings-builder</artifactId>
+        <version>3.0.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-component-annotations</artifactId>
+        <version>1.5.5</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>2.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-bean-binders</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-bean-containers</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-plexus-converters</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-plexus-scanners</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-plexus-locators</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-plexus-binders</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-plexus-lifecycles</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-bean-locators</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-bean-inject</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-classworlds</artifactId>
+        <version>2.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.scala-lang.modules</groupId>
+        <artifactId>scala-parser-combinators_2.11</artifactId>
+        <version>1.0.2</version>
+      </dependency>
+
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.8.2</version>
+      </dependency>
+
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>3.3.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-bean-converters</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-plexus-shim</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+	<dependencies>
+
+
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-classworlds</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.maven.plugin-tools</groupId>
+			<artifactId>maven-plugin-annotations</artifactId>
+			<version>3.2</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.maven</groupId>
+					<artifactId>maven-artifact</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-compat</artifactId>
+      <version>3.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>3.0.4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+    </dependency>
+
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-util</artifactId>
+			<version>1.0.2.v20150114</version>
+		</dependency>
+
+    <dependency>
+      <groupId>org.eclipse.aether</groupId>
+      <artifactId>aether-api</artifactId>
+      <version>1.0.2.v20150114</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest_2.11</artifactId>
+      <version>2.2.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+      <scope>test</scope>
+    </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<testResources>
+      <testResource>
+        <filtering>true</filtering>
+        <directory>src/test/resources</directory>
+      </testResource>
+    </testResources>
+
+		<plugins>
+
+
+			<!-- configuration of maven-plugin-plugin is needed to prevent a "Failed
+				to execute goal" error. See http://stackoverflow.com/questions/18999401/basic-maven-plugin-project-not-working-mojo-plugin-descriptors-not-generating -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>mojo-descriptor</id>
+						<goals>
+							<goal>descriptor</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>scala-maven-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>scala-compile</id>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<phase>process-resources</phase>
+						<configuration>
+							<args>
+								<arg>-unchecked</arg>
+								<arg>-deprecation</arg>
+								<arg>-feature</arg>
+							</args>
+						</configuration>
+					</execution>
+					<execution>
+						<id>scala-test-compile</id>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<phase>process-test-resources</phase>
+					</execution>
+				</executions>
+			</plugin>
+		      <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.18.1</version>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+            <phase>integration-test</phase>
+          </execution>
+          <execution>
+            <id>verify</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+			        <groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18.1</version>
+				<configuration>
+					<argLine>-Xms1024m -Xmx7000m</argLine>
+					<testFailureIgnore>false</testFailureIgnore>
+				</configuration>
+			</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>prepare-testing-repo</id>
+            <goals>
+              <goal>install-file</goal>
+            </goals>
+            <phase>package</phase> <!-- pre-pre-integration-test -->
+            <configuration>
+              <artifactId>${project.artifactId}</artifactId>
+              <groupId>${project.groupId}</groupId>
+              <version>${project.version}</version>
+              <packaging>${project.packaging}</packaging>
+              <file>${project.build.directory}/${project.artifactId}-${project.version}.jar</file>
+              <localRepositoryPath>target/tmp/m2</localRepositoryPath>
+            </configuration>
+          </execution>
+          <execution>
+            <id>prepare-testing-repo-pom</id>
+            <goals>
+              <goal>install-file</goal>
+            </goals>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <artifactId>${project.artifactId}</artifactId>
+              <groupId>${project.groupId}</groupId>
+              <version>${project.version}</version>
+              <packaging>pom</packaging>
+              <file>pom.xml</file>
+              <localRepositoryPath>target/tmp/m2</localRepositoryPath>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.7</version>
+        <executions>
+          <execution>
+            <id>default-testResources</id>
+            <goals>
+              <goal>testResources</goal>
+            </goals>
+            <configuration>
+              <delimiters>
+                <delimiter>@{*}</delimiter>
+              </delimiters>
+              <useDefaultDelimiters>false</useDefaultDelimiters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+			      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-no-snapshots</id>
+            <!-- unavoidable diamond dependency problems ... -->
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>ebpi-enforcer-maven-plugin</artifactId>
+        <groupId>nl.ebpi.maven-plugins</groupId>
+        <version>5.1.5-SNAPSHOT</version>
+        <configuration>
+          <assumptions>
+            <assumption>
+              <artifact>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>2.11.6</version>
+              </artifact>
+              <isSufficientFor>2.11.0, 2.11.1, 2.11.2, 2.11.4</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.scala-lang.modules</groupId>
+                <artifactId>scala-parser-combinators_2.11</artifactId>
+                <version>1.0.2</version>
+              </artifact>
+              <isSufficientFor>1.0.1</isSufficientFor>
+            </assumption>
+
+            <assumption>
+              <artifact>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>3.0.4</version>
+              </artifact>
+              <isSufficientFor>3.0</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>3.0.4</version>
+              </artifact>
+              <isSufficientFor>3.0</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>3.0.4</version>
+              </artifact>
+              <isSufficientFor>3.0</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-model</artifactId>
+                <version>3.0.4</version>
+              </artifact>
+              <isSufficientFor>3.0</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-model-builder</artifactId>
+                <version>3.0.4</version>
+              </artifact>
+              <isSufficientFor>3.0</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-settings-builder</artifactId>
+                <version>3.0.4</version>
+              </artifact>
+              <isSufficientFor>3.0</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-settings</artifactId>
+                <version>3.0.4</version>
+              </artifact>
+              <isSufficientFor>3.0</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-aether-provider</artifactId>
+                <version>3.0.4</version>
+              </artifact>
+              <isSufficientFor>3.0</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-repository-metadata</artifactId>
+                <version>3.0.4</version>
+              </artifact>
+              <isSufficientFor>3.0</isSufficientFor>
+            </assumption>
+
+            <assumption>
+              <artifact>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-component-annotations</artifactId>
+                <version>1.5.5</version>
+              </artifact>
+              <isSufficientFor>1.5.4</isSufficientFor>
+            </assumption>
+
+            <assumption>
+              <artifact>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-classworlds</artifactId>
+                <version>2.4</version>
+              </artifact>
+              <isSufficientFor>2.2.3, 2.2.2</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>2.1</version>
+              </artifact>
+              <isSufficientFor>2.0.7, 2.0.6, 2.0.5, 2.0.4</isSufficientFor>
+            </assumption>
+
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.aether</groupId>
+                <artifactId>aether-api</artifactId>
+                <version>1.13.1</version>
+              </artifact>
+              <isSufficientFor>1.7</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.aether</groupId>
+                <artifactId>aether-spi</artifactId>
+                <version>1.13.1</version>
+              </artifact>
+              <isSufficientFor>1.7</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.aether</groupId>
+                <artifactId>aether-util</artifactId>
+                <version>1.13.1</version>
+              </artifact>
+              <isSufficientFor>1.7</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.aether</groupId>
+                <artifactId>aether-impl</artifactId>
+                <version>1.13.1</version>
+              </artifact>
+              <isSufficientFor>1.7</isSufficientFor>
+            </assumption>
+
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-plexus-metadata</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-plexus-scanners</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-bean-reflect</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-bean-containers</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-bean-locators</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-bean-binders</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu</groupId>
+                <artifactId>sisu-inject-plexus</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu</groupId>
+                <artifactId>sisu-inject-bean</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-bean-inject</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-bean-converters</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-bean-scanners</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-plexus-shim</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-plexus-locators</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-plexus-converters</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-plexus-binders</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu.inject</groupId>
+                <artifactId>guice-plexus-lifecycles</artifactId>
+                <version>2.3.0</version>
+              </artifact>
+              <isSufficientFor>1.4.2, 2.2.3</isSufficientFor>
+            </assumption>
+
+            <assumption>
+              <artifact>
+                <groupId>org.sonatype.sisu</groupId>
+                <artifactId>sisu-guice</artifactId>
+                <version>3.1.0</version>
+              </artifact>
+              <isSufficientFor>3.0.3, 2.1.7</isSufficientFor>
+            </assumption>
+
+
+            <assumption>
+              <artifact>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.8.2</version>
+              </artifact>
+              <isSufficientFor>3.8.2</isSufficientFor>
+            </assumption>
+
+            <assumption>
+              <artifact>
+                <groupId>asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>3.3.1</version>
+              </artifact>
+              <isSufficientFor>3.2</isSufficientFor>
+            </assumption>
+
+          </assumptions>
+        </configuration>
+      </plugin>
+		</plugins>
+
+	</build>
+
+	<profiles>
+		<profile>
+			<id>coverage</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.scoverage</groupId>
+						<artifactId>maven-scoverage-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>
