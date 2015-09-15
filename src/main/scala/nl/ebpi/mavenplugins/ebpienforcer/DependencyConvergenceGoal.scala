@@ -12,7 +12,8 @@ import org.apache.maven.plugin.{AbstractMojo, MojoExecution, MojoFailureExceptio
 import org.apache.maven.plugins.annotations.{Component, LifecyclePhase, Mojo, Parameter}
 import org.apache.maven.project.{MavenProject, MavenProjectHelper, ProjectBuilder, ProjectBuildingException}
 import org.apache.maven.repository.RepositorySystem
-import org.sonatype.aether.RepositorySystemSession
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils
+import org.eclipse.aether.RepositorySystemSession
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable
@@ -96,11 +97,10 @@ class DependencyConvergenceGoal extends AbstractMojo {
   @Component
   protected var projectBuilder: ProjectBuilder = null
 
-  @Parameter(defaultValue = "${repositorySystemSession}")
-  protected var repoSession: RepositorySystemSession = null
-
   @Parameter
   protected var assumptions : java.util.List[Assumption] = new util.ArrayList[Assumption]()
+
+  def repoSession : RepositorySystemSession = MavenRepositorySystemUtils.newSession()
 
   override def execute(): Unit = {
     //val conflicts = determineConflicts
@@ -227,7 +227,6 @@ class DependencyConvergenceGoal extends AbstractMojo {
         dependency.getType)
 
       val request = session.getRequest.getProjectBuildingRequest.setProcessPlugins(false)
-      request.setRepositorySession(repoSession)
 
       try {
         val response = projectBuilder.build(artifact, false, request)
