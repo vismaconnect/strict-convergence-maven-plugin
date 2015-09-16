@@ -3,6 +3,8 @@
 This maven plugin checks whether the dependency graph of a module is convergent.
 That is, that for every transitive dependency, the same version is used.
 
+[![Build Status](https://api.travis-ci.org/EBPI/strict-convergence-maven-plugin.svg)](https://travis-ci.org/EBPI/strict-convergence-maven-plugin)
+
 ### Why should I care?
 
 Every time there is an inconsistency in the dependency graph, one of the versions is chosen.
