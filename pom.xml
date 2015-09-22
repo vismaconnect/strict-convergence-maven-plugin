@@ -4,7 +4,7 @@
 
 	<groupId>nl.ebpi.maven.plugins</groupId>
 	<artifactId>strict-convergence-maven-plugin</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
 	<name>EBPI Strict Convergence Plugin</name>
 	<packaging>maven-plugin</packaging>
 	<description>Checks dependency convergence without being affected by dependencyManagement sections.</description>
