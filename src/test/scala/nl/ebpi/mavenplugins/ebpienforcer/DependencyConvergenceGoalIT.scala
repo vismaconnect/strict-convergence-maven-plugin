@@ -188,20 +188,48 @@ class DependencyConvergenceGoalIT extends TestBase {
       it("must reject project d-assume-no-depmgt, because although an assumption is configured, the choice " +
         "is still nondeterministic, because the version is not pinned by the dependencyManagement section") {
         context
-        failureOf(project = "d") must (
-          include("""[ERROR] Disputed artifact: unit.test:a""") and
-            include("""
-                      |[ERROR]     1 is required through
-                      |[ERROR]       unit.test:d:1
-                      |[ERROR]         unit.test:b:1
-                      |[ERROR]           unit.test:a:1
-                      |""".stripMargin) and
-            include("""
-                      |[ERROR]     2 is required through
-                      |[ERROR]       unit.test:d:1
-                      |[ERROR]         unit.test:c:1
-                      |[ERROR]           unit.test:a:2
-                      |""".stripMargin))
+        failureOf(project = "d-assume-no-depmgt") must include(
+          """
+            |[ERROR] Assumption is not reflected in dependencyManagement. Add unit.test:a:2 to the dependencyManagement section.
+            |""".stripMargin)
+      }
+    }
+    describe("has a 'shallow' configuration option that is off by default") {
+      it("must reject isolated/invalid, because it contains a problem in a dependency") {
+        context
+        failureOf(project = "isolated/invalid") must (
+          include("""
+                    |[ERROR]     1 is required through
+                    |[ERROR]       unit.test:isolated-invalid:1
+                    |[ERROR]         unit.test:d:1
+                    |[ERROR]           unit.test:b:1
+                    |[ERROR]             unit.test:a:1
+                    |""".stripMargin) and
+          include("""
+                    |[ERROR]     2 is required through
+                    |[ERROR]       unit.test:isolated-invalid:1
+                    |[ERROR]         unit.test:d:1
+                    |[ERROR]           unit.test:c:1
+                    |[ERROR]             unit.test:a:2
+                    |""".stripMargin)
+          )
+      }
+      it("must accept isolated/exempt because the problem is isolated to a single dependency") {
+        context
+        assumeInstall("isolated/exempt")
+      }
+      it("must reject isolated/direct because the problem is not even isolated") {
+        context
+        failureOf(project = "isolated/direct") must (
+          include("""
+                    |[ERROR]     2 is required through
+                    |[ERROR]       unit.test:isolated-direct:1
+                    |[ERROR]         unit.test:a:2
+                    |[ERROR]         unit.test:d:1
+                    |[ERROR]           unit.test:c:1
+                    |[ERROR]             unit.test:a:2
+                    |""".stripMargin)
+          )
       }
     }
   }
@@ -249,14 +277,21 @@ object DependencyConvergenceGoalIT {
   lazy val context : Unit = {
     implicit val ec = ExecutionContext.global
 
-    def buildSimultaneously(projects: String*) {
-      Await.ready(Future.sequence(projects.toList.map(x => Future(assumeInstall(x)))),
-        atMost = Duration.Inf).value.get.get.foreach { x => () }
+    def simultaneously(futures : Future[Any]*) : Unit = {
+      Await.ready(Future.sequence(futures), atMost = Duration.Inf).value.get.get.foreach { x => () }
+    }
+
+    def buildSimultaneously(projects: String*) : Unit = {
+      simultaneously(projects.map(x => Future(assumeInstall(x))) : _*)
     }
 
     buildSimultaneously("a/1", "a/2")
     buildSimultaneously("b", "c", "g/1", "g/2", "k", "l")
-    buildSimultaneously("h")
+
+    simultaneously(
+      Future(buildSimultaneously("h")),
+      Future(assumeInstall("d", List("-e", "clean", "install", "-Pforce")))
+    )
   }
 
 }

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>unit.test</groupId>
-  <artifactId>d-assume</artifactId>
+  <artifactId>d-assume-no-depmgt</artifactId>
   <version>1</version>
   <packaging>jar</packaging>
   <name>Test MyMojo</name>

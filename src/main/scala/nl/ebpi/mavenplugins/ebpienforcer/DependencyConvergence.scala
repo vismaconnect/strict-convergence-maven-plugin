@@ -14,8 +14,13 @@ case class ProjectKey(groupId: String, artifactId: String)
 case class Project(key: ProjectKey, version: String)
 
 case class DependentChain(involvedProjects: List[Project]) {
+
   def tail: DependentChain = DependentChain(involvedProjects.tail)
   def head: Project = involvedProjects.head
+
+  // last is this project being analyzed
+  // init.last is direct dependency of this project
+  def directDependency : Project = involvedProjects.init.last
 
   /**
    * Transforms the dependent chain into a dependency chain.
@@ -33,7 +38,17 @@ object DependencyConvergence {
   type Conflict = Map[Project, List[DependentChain]]
 
 
-  def determineConflicts(allDependentChains: List[DependentChain], isAssumedSufficientFor: Map[Project, Project]): Iterable[Conflict] = {
+  def determineConflicts(allDependentChains: List[DependentChain],
+                         isAssumedSufficientFor: Map[Project, Project],
+                         shallowCheck : Boolean): Iterable[Conflict] = {
+
+    def isShallowConflict(conflict : Conflict) : Boolean = {
+      val allPathsToAllVersionsOfDisputedArtifact = conflict.values.flatten
+      allPathsToAllVersionsOfDisputedArtifact.groupBy(_.directDependency).size > 1
+    }
+    val filterConflicts : Iterable[Conflict] => Iterable[Conflict] = {
+      if (shallowCheck) _.filter(isShallowConflict) else identity
+    }
 
     def toBeReplacedBy(someProject: Project): Project = {
       isAssumedSufficientFor.getOrElse(someProject, someProject)
@@ -48,7 +63,7 @@ object DependencyConvergence {
     }
 
 
-    def goDetermineConflicts: Iterable[Conflict] = {
+    def allConflicts: Iterable[Conflict] = {
       val allChains = allDependentChains
       val groupedProjectsWithDependents = byKey(allChains).values
       groupedProjectsWithDependents.map(conflictOption).flatMap(Option.option2Iterable)
@@ -89,8 +104,7 @@ object DependencyConvergence {
       })
     }
 
-
-    shrinkConflicts(goDetermineConflicts)
+    (filterConflicts andThen shrinkConflicts)(allConflicts)
   }
 
 }

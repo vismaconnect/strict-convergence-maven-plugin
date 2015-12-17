@@ -100,13 +100,17 @@ class DependencyConvergenceGoal extends AbstractMojo {
   @Parameter
   protected var assumptions : java.util.List[Assumption] = new util.ArrayList[Assumption]()
 
+  @Parameter(defaultValue = "false")
+  protected var shallowCheck : Boolean = false
+
   def repoSession : RepositorySystemSession = MavenRepositorySystemUtils.newSession()
 
   override def execute(): Unit = {
     //val conflicts = determineConflicts
     val conflicts = DependencyConvergence.determineConflicts(
       allDependentChains = dependentChainsForAllDependencies(project).map(DependentChain(_)),
-      isAssumedSufficientFor = currentAssumptions)
+      isAssumedSufficientFor = currentAssumptions,
+      shallowCheck = shallowCheck)
 
     if (conflicts.nonEmpty) {
       // Remove conflicts that follow from other conflicts before presenting them.
@@ -200,13 +204,29 @@ class DependencyConvergenceGoal extends AbstractMojo {
       dependencies.toMap
   }
 
+  def checkAssumptionsWithDependencyManagement(assumptions: Map[Project, Project], dependencyManagement: Map[ProjectKey, Project]) : Unit = {
+    val messages = (for {
+      replacement <- assumptions.values
+      message <- dependencyManagement.get(replacement.key) match {
+        case None => IndexedSeq(s"Assumption is not reflected in dependencyManagement. Add ${replacement.key.groupId}:${replacement.key.artifactId}:${replacement.version} to the dependencyManagement section.")
+        case Some(dmProject) if dmProject.version != replacement.version => IndexedSeq(s"Assumption is inconsistent with dependencyManagement. Assumption suggest ${replacement.key.groupId}:${replacement.key.artifactId}:${replacement.version} but dependencyManagement suggests version ${dmProject.version}")
+        case _ => IndexedSeq.empty
+      }
+    } yield message).toIndexedSeq
+    if (messages.nonEmpty) {
+      throw new MojoFailureException(s"Assumptions and dependencyManagement do not match:\t\n${messages.mkString("\t\n")}")
+    }
+  }
+
   def currentAssumptions : Map[Project, Project] = {
-    (for {
+    val theAssumptions = (for {
       assumption <- assumptions.iterator().asScala
       replacement = toProject(assumption.artifact)
       isSufficientFor <- assumption.isSufficientFor.split(",").map(_.trim)
       replaceable = Project(replacement.key, isSufficientFor)
     } yield (replaceable, replacement)).toMap
+    checkAssumptionsWithDependencyManagement(theAssumptions, dependencyManagement)
+    theAssumptions
   }
 
   /**
