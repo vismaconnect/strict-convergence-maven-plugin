@@ -37,16 +37,24 @@ object DependencyConvergence {
 
   type Conflict = Map[Project, List[DependentChain]]
 
-
   def determineConflicts(allDependentChains: List[DependentChain],
                          isAssumedSufficientFor: Map[Project, Project],
                          shallowCheck : Boolean): Iterable[Conflict] = {
 
-    def isShallowConflict(conflict : Conflict) : Boolean = {
-      val allPathsToAllVersionsOfDisputedArtifact = conflict.values.flatten
-      allPathsToAllVersionsOfDisputedArtifact.groupBy(_.directDependency).size > 1
-    }
     val filterConflicts : Iterable[Conflict] => Iterable[Conflict] = {
+
+      def isShallowConflict(conflict : Conflict) : Boolean = {
+        val allPathsToAllVersionsOfDisputedArtifact = conflict.values.flatten
+
+        // Strip the disputed node and this project from all paths
+        val intermediatePaths = allPathsToAllVersionsOfDisputedArtifact.map(_.involvedProjects.tail.init)
+
+        // Conflicts that are not relevant can be eliminated by removing one
+        // node from the dependency graph. If that is the case, the conflict
+        // is 'deep' and therefore not shallow.
+        !PathsOfDAGHaveCutSize1(intermediatePaths)
+      }
+
       if (shallowCheck) _.filter(isShallowConflict) else identity
     }
 
